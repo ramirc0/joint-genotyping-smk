@@ -1,0 +1,8 @@
+# User defined
+.snakemake
+.tmp
+logs/
+resources/
+results/
+environments/wgs-smk/build.log
+workflow/rules/envs/

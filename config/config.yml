@@ -1,0 +1,37 @@
+resources:
+  reference_fasta: "resources/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta"
+  reference_fasta_index: "resources/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai"
+  reference_dict: "resources/GRCh38_no_alt_analysis_set_GCA_000001405.15.dict"
+  reference_chromsizes: "resources/GRCh38_no_alt_analysis_set_GCA_000001405.15.chromsizes"
+  dbsnp_vcf: "resources/Homo_sapiens_assembly38.dbsnp138.vcf"
+  dbsnp_vcf_index: "resources/Homo_sapiens_assembly38.dbsnp138.vcf.idx"
+  haplotype_database: "resources/Homo_sapiens_assembly38.haplotype_database.txt"
+  eval_interval_list: "resources/wgs_evaluation_regions.hg38.interval_list"
+  unpadded_interval_list: "resources/hg38.even.handcurated.20k.intervals"
+  hapmap_resource_vcf: "resources/hapmap_3.3.hg38.vcf.gz"
+  hapmap_resource_vcf_index: "resources/hapmap_3.3.hg38.vcf.gz.tbi"
+  omni_resource_vcf: "resources/1000G_omni2.5.hg38.vcf.gz"
+  omni_resource_vcf_index: "resources/1000G_omni2.5.hg38.vcf.gz.tbi"
+  one_thousand_genomes_resource_vcf: "resources/1000G_phase1.snps.high_confidence.hg38.vcf.gz"
+  one_thousand_genomes_resource_vcf_index: "resources/1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi"
+  mills_resource_vcf: "resources/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+  mills_resource_vcf_index: "resources/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"
+
+environments:
+  gatk: "docker://us.gcr.io/broad-gatk/gatk:latest"
+  custom: "docker://clarity001/wgs-smk:latest"
+
+params:
+  sample_num_threshold: 50
+  scatter_count: 2
+  scatter_mode: "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW"
+  tmp_dir: ".tmp"
+  batch_size: 50
+  excess_het_threshold: 54.69
+  snps_variant_recalibration_threshold: 500000 
+  snp_recalibration_annotation_values: ["QD", "MQRankSum", "ReadPosRankSum", "FS", "MQ", "SOR", "DP"] 
+
+input:
+  slack_webhook_url: MY_SLACK_WEBHOOK_URL
+  sample_map: "MOHD.sample_map.tsv"
+  callset_name: "MOHD"

@@ -1,0 +1,104 @@
+executor: slurm
+jobs: unlimited
+
+set-resources:
+  check_sample_map:
+    runtime: 30m
+    threads: 2
+    cpus: 2
+    mem: 62500MB
+  split_interval_list:
+    runtime: 30m
+    threads: 2
+    cpus: 2
+    mem: 62500MB
+  import_gvcfs:
+    runtime: 7200m
+    constraint: cascadelake
+    slurm_extra: "--cpu-freq=High-High:Performance"
+    slurm_partition: 5days
+    threads: 6
+    cpus_per_task: 6
+    mem: 25000MB
+  genotype_gvcfs:
+    runtime: 7200m
+    constraint: cascadelake
+    slurm_extra: "--cpu-freq=High-High:Performance"
+    slurm_partition: 5days
+    threads: 2
+    cpus_per_task: 2
+    mem: 26000MB
+  hard_filter:
+    runtime: 720m
+    constraint: cascadelake
+    slurm_extra: "--cpu-freq=High-High:Performance"
+    slurm_partition: 12hours
+    threads: 2
+    cpus_per_task: 2
+    mem: 4000MB
+  gather_sites_only_vcfs:
+    runtime: 720m
+    constraint: cascadelake
+    slurm_extra: "--cpu-freq=High-High:Performance"
+    slurm_partition: 12hours
+    threads: 2 
+    cpus_per_task: 2
+    mem: 7000MB
+  extract_variant_annotations:
+    runtime: 240m
+    constraint: cascadelake
+    slurm_extra: "-cpu-freq=High-High:Performance"
+    slurm_partition: 4hours
+    threads: 2
+    cpus_per_task: 2
+    mem: 6000MB
+  train_variant_annotations_model:
+    runtime: 240m
+    constraint: cascadelake
+    slurm_extra: "--cpu-freq=High-High:Performance"
+    slurm_partition: 4hours
+    threads: 2
+    cpus_per_task: 2
+    mem: 7000MB
+  score_variant_annotations:
+    runtime: 240m
+    constraint: cascadelake
+    slurm_extra: "--cpu-freq=High-High:Performance"
+    slurm_partition: 4hours
+    threads: 2
+    cpus_per_task: 2
+    mem: 3000MB
+  gather_final_vcf:
+    runtime: 240m
+    constraint: cascadelake
+    slurm_extra: "--cpu-freq=High-High:Performance"
+    slurm_partition: 4hours
+    threads: 2
+    cpus_per_task: 2
+    mem: 7000MB
+  collect_variant_calling_metrics:
+    runtime: 720m
+    constraint: cascadelake
+    slurm_extra: "--cpu-freq=High-High:Performance"
+    slurm_partition: 12hours
+    threads: 4
+    cpus_per_task: 4
+    mem: 15000MB
+
+use-apptainer: True
+apptainer-prefix: workflow/rules/envs
+apptainer-args: -B /data
+
+# Debug
+printshellcmds: True
+slurm-requeue: False
+slurm-efficiency-report: True
+rerun-incomplete: True
+
+# # Run
+# retries: 3
+# printshellcmds: True
+# slurm-requeue: False
+# rerun-incomplete: True
+# keep-going: True
+
