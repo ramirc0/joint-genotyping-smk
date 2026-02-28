@@ -2,7 +2,7 @@
 
 ## Overview
 
-Here we present a snakemake[https://github.com/snakemake/snakemake.git] pipeline for variant calling and filtering jointly across multiple samples.
+Here we present a [snakemake](https://github.com/snakemake/snakemake.git) pipeline for variant calling and filtering jointly across multiple samples.
 
 > [!NOTE]
 > This pipeline is based on [WARP JointGenotyping pipeline](https://broadinstitute.github.io/warp/docs/Pipelines/JointGenotyping_Pipeline/README) by the Broad Institute, [originally licensed](https://github.com/broadinstitute/warp/blob/develop/LICENSE) under BSD. See [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES) for details.
