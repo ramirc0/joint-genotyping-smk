@@ -62,7 +62,7 @@ params:
 
 ```
 
-These key-value pairs are mainly parameters for the varias command-line tools used in the pipeline (i.e. `gatk`). However you'll mainly want to pay attention to the following:
+These key-value pairs are mainly parameters for the various command-line tools used in the pipeline (i.e. `gatk`). However you'll mainly want to pay attention to the following:
 
 - `params.sample_num_threshold`: This is the minimum number of samples that must be present in a scatter. By default, this is set to 50. We do not recommend running this pipeline if your callset has fewer than 50 samples.
 - `params.scatter_count`: The gather-scatter-gather pattern used to parallelize operations relies on an interval list (of genomic coordinates) file and a scatter count. When running the pipeline, the interval list is split into parts depending on the scatter count. These interval lists dicate the degree of parallelism in subsequent operations. It is recommended to set the scatter count according to the following calculation: `round(0.15 * num_gvcfs)`.
@@ -97,11 +97,13 @@ snakemake --workflow-profile profile/slurm
 > [!NOTE]
 > It is recommended that you run the pipeline in dry run mode first (add the `-n` flag). Also note that `snakemake` must be ran in the root of this repository.
 
-This will run the pipeline and produce all outputs to a folder directory `results`.
+This will run the pipeline and produce all outputs to a directory `results`.
 
 ### What if I cannot run on a SLURM cluster?
 
-If you cannot run the pipeline on a SLURM cluster, you can run it locally. However, this is not a supported use case. First got to the [workflow/Snakefile](workflow/Snakefile) and comment out the following lines:
+If you cannot run the pipeline on a SLURM cluster, you can run it locally. However, this is not a supported use case.
+
+To run locally, go to the [workflow/Snakefile](workflow/Snakefile) and comment out the following lines:
 
 ```python
   # # Testing
@@ -116,7 +118,7 @@ If you cannot run the pipeline on a SLURM cluster, you can run it locally. Howev
   # collect_variant_calling_metrics,
 ```
 
-These are rule names. When uncommented, under the `localrules` directive, they will instead execute on the local machine.
+These are rule names. When uncommented, under the `localrules` directive, they will execute on the local machine.
 
 ## References
 
