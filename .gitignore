@@ -5,6 +5,8 @@ MOHD.sample_map.tsv
 .tmp
 logs/
 resources/
+layout.txt
+pipeline.txt
 results/
 environments/wgs-smk/build.log
 workflow/rules/envs/
