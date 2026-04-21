@@ -8,6 +8,7 @@ resources/
 layout.txt
 pipeline.txt
 results/
+make_sample_map_example.py
 environments/wgs-smk/build.log
 workflow/rules/envs/
 
