@@ -31,7 +31,7 @@ mamba activate joint-genotyping-smk
 Then, download the required resources:
 
 ```bash
-curl -fsSL https://users.wenglab.org/ramirezc/mohd/resources/joint-genotyping-smk-resources.tar.zst | tar --use-compress-program=zstd -xf -
+curl -fsSL https://users.wenglab.org/ramirezc/mohd/resources/joint-genotyping-smk.tar.zst | tar --use-compress-program=zstd -xf -
 ```
 
 ### Example Configfile
