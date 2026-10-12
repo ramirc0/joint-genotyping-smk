@@ -11,6 +11,7 @@ results/
 make_sample_map_example.py
 environments/wgs-smk/build.log
 workflow/rules/envs/
+.claude/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
