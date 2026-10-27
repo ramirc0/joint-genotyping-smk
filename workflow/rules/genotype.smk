@@ -42,6 +42,7 @@ rule import_gvcfs:
         workspace=directory(f"{OUTDIR}/import_gvcfs/{{scatter}}"),
         tar=f"{OUTDIR}/import_gvcfs/{{scatter}}.tar",
     params:
+        tmp_dir=lambda w: config["tmp_dir"],
         batch_size=lambda w: config["batch_size"],
     log:
         f"{LOGDIR}/import_gvcfs/{{scatter}}.txt",
@@ -55,6 +56,7 @@ rule import_gvcfs:
 
         gatk --java-options "-Xms8000m -Xmx$(({resources.mem_mb} - 10000))m" \
             GenomicsDBImport \
+            --tmp-dir {params.tmp_dir:q} \
             --genomicsdb-workspace-path {output.workspace:q} \
             --batch-size {params.batch_size:q} \
             -L {input.interval_list:q} \
