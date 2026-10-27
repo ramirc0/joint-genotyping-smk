@@ -1,0 +1,24 @@
+sample_map: config/sample_map.tsv
+callset_name: callset
+outdir: results
+pixi_env: default
+run_id: default
+tmp_dir: .tmp
+slack_webhook_url: null
+
+references:
+  fasta: resources/chr20_toy.fasta
+  dbsnp_vcf: resources/dbsnp138.chr20_toy.vcf
+  eval_interval_list: resources/wgs_evaluation_regions.chr20_toy.interval_list
+  unpadded_interval_list: resources/hg38.even.handcurated.20k.chr20_toy.intervals
+  hapmap_resource_vcf: resources/hapmap_3.3.chr20_toy.vcf.gz
+  omni_resource_vcf: resources/1000G_omni2.5.chr20_toy.vcf.gz
+  one_thousand_genomes_resource_vcf: resources/1000G_phase1.snps.high_confidence.chr20_toy.vcf.gz
+  mills_resource_vcf: resources/Mills_and_1000G_gold_standard.indels.chr20_toy.vcf.gz
+
+sample_num_threshold: 50
+scatter_count: 2
+scatter_mode: BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW
+batch_size: 50
+excess_het_threshold: 54.69
+snp_recalibration_annotation_values: [QD, MQRankSum, ReadPosRankSum, FS, MQ, SOR, DP]
