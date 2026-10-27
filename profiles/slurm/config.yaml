@@ -15,6 +15,9 @@ slurm-efficiency-report: true
 slurm-efficiency-report-path: logs/efficiency
 slurm-efficiency-threshold: 0.8
 slurm-init-seconds-before-status-checks: 10
+# NODE_FAIL nodes join this list. An --exclude in slurm_extra would override it.
+# z1076 cannot read /data.
+slurm-exclude-failed-nodes: z1076
 
 default-resources:
   runtime: 30m
