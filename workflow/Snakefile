@@ -4,7 +4,10 @@ include: "rules/vets.smk"
 include: "rules/qc.smk"
 
 
+# The pixi plugin installs the env inside each job. Parallel SLURM jobs then race
+# on a fresh or relocked env, so install it once before any job starts.
 onstart:
+    shell("pixi install --manifest-path {workflow.basedir:q}/envs/pixi.toml --all --locked")
     shell("rm -rf .tmp")
     shell("mkdir -p {config[tmp_dir]:q}")
     notify_slack("Snakemake Started 🚀")
