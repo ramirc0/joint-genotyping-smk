@@ -1,124 +1,172 @@
-# Joint Genotyping Snakemake Pipeline
+# joint-genotyping-smk
 
-## Overview
-
-Here we present a [snakemake](https://github.com/snakemake/snakemake.git) pipeline for variant calling and filtering jointly across multiple samples.
+A [Snakemake](https://github.com/snakemake/snakemake) pipeline that jointly
+genotypes reblocked gVCFs. GenomicsDBImport and GenotypeGVCFs call each interval
+scatter. An ExcessHet hard filter follows. GATK's Variant Extract-Train-Score
+(VETS) tools then filter the sites, and the scatters are gathered into one VCF.
+The inputs come from
+[wgs-smk](https://github.com/christian728504/wgs-smk.git) or the
+[WARP Whole Genome Germline Single Sample pipeline](https://broadinstitute.github.io/warp/docs/Pipelines/Whole_Genome_Germline_Single_Sample/README).
 
 > [!NOTE]
-> This pipeline is based on [WARP JointGenotyping pipeline](https://broadinstitute.github.io/warp/docs/Pipelines/JointGenotyping_Pipeline/README) by the Broad Institute, [originally licensed](https://github.com/broadinstitute/warp/blob/develop/LICENSE) under BSD. See [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES) for details.
+> This pipeline is based on the [WARP JointGenotyping pipeline](https://broadinstitute.github.io/warp/docs/Pipelines/JointGenotyping_Pipeline/README) by the Broad Institute, [originally licensed](https://github.com/broadinstitute/warp/blob/develop/LICENSE) under BSD. See [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES) for details.
 
-## Example Usage
+## Layout
 
-### Prerequisites
-
-To run this pipeline, you will need to have previously ran the [WARP Whole Genome Germline Single Sample pipeline](https://broadinstitute.github.io/warp/docs/Pipelines/Whole_Genome_Germline_Single_Sample/README) or our snakemake equivalent, [wgs-smk]().
-
-### Dependcies
-
-This pipeline requires the following dependencies to be ran:
-
-- [`conda` (preferably `mamba`)](https://github.com/conda-forge/miniforge)
-- [`singularity`](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)
-- (Optional) [`slurm`](https://slurm.schedmd.com/quickstart.html)
-
-To start, first setup the runtime environment:
-
-```bash
-mamba env create --name=joint-genotyping-smk --file=environments/joint-genotyping-smk.yaml
-mamba activate joint-genotyping-smk
+```
+config/
+  config.yaml.template   parameters + paths; copy to config.yaml (gitignored)
+  sample_map.example.tsv headerless: sample ID, gVCF path
+workflow/
+  Snakefile              includes the rule files, Slack hooks, rule all
+  rules/
+    common.smk           config, sample map checks, path constants, helpers
+    genotype.smk         SplitIntervals, GenomicsDBImport, GenotypeGVCFs, hard filter, gather
+    vets.smk             ExtractVariantAnnotations, Train, Score, final gather
+    qc.smk               CollectVariantCallingMetrics
+  envs/pixi.toml         rule envs (pixi workspace): default and gatk
+.tests/integration/      100 1000 Genomes samples on a 348 kb chr20 window
+profiles/
+  local/config.yaml      local execution
+  slurm/config.yaml      SLURM (per-rule resources, retried with more memory)
+pixi.toml                launcher env + test task
 ```
 
-Then, download the required resources:
+## Running
+
+```bash
+cp config/config.yaml.template config/config.yaml        # then edit
+cp config/sample_map.example.tsv config/sample_map.tsv   # then edit
+pixi shell                                               # launcher env
+snakemake -n -p --profile profiles/local                 # dry run
+snakemake --profile profiles/local                       # local
+snakemake --profile profiles/slurm                       # SLURM
+```
+
+The SLURM profile holds Weng Lab cluster settings, such as partitions and the
+`cascadelake` constraint. Adapt them for another cluster with the
+[SLURM executor docs](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html).
+Tune `set-resources` from the `benchmarks/<run_id>/` TSVs after a first run.
+
+## Integration test
+
+```bash
+pixi run test
+```
+
+It runs every rule in `.tests/integration/` with the local profile, in about
+two minutes. The inputs are the reblocked gVCFs of 100 unrelated 1000 Genomes
+30x samples from a wgs-smk run, cut to `chr20:1-347695`. They cover all 26
+populations, 50 male and 50 female. A hundred samples pass the default
+`sample_num_threshold` and make GenomicsDBImport run two batches.
+`make_test_data.sh` records how the inputs were built. It is not part of the
+test.
+
+## Inputs
+
+The sample map is a headerless TSV. Column one is the sample ID and column two
+is its gVCF. GenomicsDBImport reads it as `--sample-name-map`. The workflow
+checks it while it parses, so a dry run fails too. It fails when a gVCF is
+missing, when a sample ID repeats, or when the map has `sample_num_threshold`
+samples or fewer.
+
+Download the references into `resources/` (gitignored):
 
 ```bash
 curl -fsSL https://users.wenglab.org/ramirezc/mohd/resources/joint-genotyping-smk.tar.zst | tar --use-compress-program=zstd -xf -
 ```
 
-### Example Configfile
+The `.fai` and `.dict` MUST sit beside the FASTA. dbSNP MUST be a plain VCF
+with a GATK `.idx`.
 
-For a complete example, see [config/config.yml](config/config.yml). Form this file you'll want to pay attention to the following sections:
+## Configuration
 
-```yaml
-input:
-  slack_webhook_url: MY_SLACK_WEBHOOK_URL
-  sample_map: "MOHD.sample_map.tsv"
-  callset_name: "MOHD"
-```
+| Key | Meaning |
+|---|---|
+| `sample_map` | Sample map path. |
+| `callset_name` | Prefix of every callset file. |
+| `outdir` | Results root. |
+| `run_id` | Run name. Outputs go under `results/<run_id>/`. |
+| `pixi_env` | Environment of `workflow/envs/pixi.toml` that the metrics rule uses. |
+| `tmp_dir` | GATK and Picard scratch. It MUST NOT sit on a `noexec` mount, as `/tmp` is on some hosts. |
+| `slack_webhook_url` | Optional [Slack app](https://docs.slack.dev/app-management/quickstart-app-settings/) webhook. The run posts when it starts, succeeds or fails. |
+| `references.fasta` | Reference genome FASTA. |
+| `references.dbsnp_vcf` | dbSNP VCF for GenotypeGVCFs and the metrics. |
+| `references.eval_interval_list` | Target intervals for the metrics. |
+| `references.unpadded_interval_list` | Calling intervals to scatter. |
+| `references.*_resource_vcf` | HapMap, Omni, 1000G and Mills VETS resources. |
+| `sample_num_threshold` | The map needs more samples than this. Default `50`. |
+| `scatter_count` | Number of scatters. About `round(0.15 * number of gVCFs)`. |
+| `scatter_mode` | SplitIntervals `-mode`. |
+| `batch_size` | GenomicsDBImport `--batch-size`. |
+| `excess_het_threshold` | Sites with a larger ExcessHet get the `ExcessHet` filter. |
+| `snp_recalibration_annotation_values` | VETS annotations, passed as `-A`. |
 
-- `input.slack_webhook_url`: (Optional) This is the webhook URL for your [Slack app](https://docs.slack.dev/app-management/quickstart-app-settings/). This is for a convenience feature so that messages will be sent about that status of your running snakemake pipeline.
-- `input.sample_map`: This is the path to your sample map file. It is a tab-delimited file with no header. The first column contains sample IDs which *must be unique* and the second column contains the path to the corresponding gVCF. To see a complete example with the Phase 0 MOHD paticipants, see [MOHD.sample_map.tsv](MOHD.sample_map.tsv).
-- `input.callset_name`: This is the name of your callset. In our case, it is `MOHD`.
+## Outputs
 
-```yaml
-params:
-  sample_num_threshold: 50
-  scatter_count: 10
-  scatter_mode: "BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW"
-  tmp_dir: ".tmp"
-  batch_size: 50
-  excess_het_threshold: 54.69
-  snps_variant_recalibration_threshold: 500000 
-  snp_recalibration_annotation_values: ["QD", "MQRankSum", "ReadPosRankSum", "FS", "MQ", "SOR", "DP"] 
+Everything goes under `results/<run_id>/`. Logs and benchmarks go to
+`logs/<run_id>/` and `benchmarks/<run_id>/`.
 
-```
+| Path | Contents |
+|---|---|
+| `scatter_dir/` | Scattered interval lists |
+| `import_gvcfs/<scatter>/`, `<scatter>.tar` | GenomicsDB workspace and its tar |
+| `genotype_gvcfs/` | Per-scatter joint calls |
+| `hard_filter/` | ExcessHet-filtered and sites-only VCFs |
+| `<callset>.sites_only.vcf.gz` | Gathered sites-only VCF |
+| `<callset>.extract.*` | VETS annotations and labeled sites |
+| `<callset>.train.{snp,indel}.*` | VETS scorers and score files |
+| `score_variant_annotations/` | Per-scatter scored VCFs |
+| `<callset>.final.vcf.gz` | Final joint VCF |
+| `<callset>.variant_calling_{detail,summary}_metrics` | Picard metrics against dbSNP |
 
-These key-value pairs are mainly parameters for the various command-line tools used in the pipeline (i.e. `gatk`). However you'll mainly want to pay attention to the following:
+## Environment
 
-- `params.sample_num_threshold`: This is the minimum number of samples that must be present in a scatter. By default, this is set to 50. We do not recommend running this pipeline if your callset has fewer than 50 samples.
-- `params.scatter_count`: The gather-scatter-gather pattern used to parallelize operations relies on an interval list (of genomic coordinates) file and a scatter count. When running the pipeline, the interval list is split into parts depending on the scatter count. These interval lists dicate the degree of parallelism in subsequent operations. It is recommended to set the scatter count according to the following calculation: `round(0.15 * num_gvcfs)`.
-- `params.tmp_dir`: This is the temporary directory for intermediate files. In some compute enivornments, `/tmp` is mounted with `noexec`. In this case, you'll need to set this to `.tmp`. Otherwise, certain command-line tools which write to the temporary directory will raise errors.
+The launcher env (`pixi.toml` at the root) has Snakemake main and its plugins
+for pixi deployment and SLURM. The rule envs live in a second pixi workspace,
+`workflow/envs/`. Its `pixi.lock` pins every package. `gatk` runs GATK 4.6.2.0
+on OpenJDK 17, with the scikit-learn stack that VETS needs. `default` runs
+Picard and bcftools. pixi MUST be on `PATH`.
 
-### Defining resources
+The versions match the images that produced the production results:
+`us.gcr.io/broad-gatk/gatk:latest` and `clarity001/wgs-smk:latest`, both pulled
+on 2026-07-11. conda-forge lacks their exact OpenJDK builds, so the envs use
+17.0.13 and 21.0.10.
 
-All resource definitions for rules are located in [profile/slurm/config.yaml](profile/slurm/config.yaml). 
+Add a dependency with `pixi add <pkg>` in `workflow/envs/`. After a hand edit,
+run `pixi lock` there (rules use `locked=True`). Any change to the manifest or
+lock reruns every rule. So does moving the workdir, because the env hash includes
+the workspace's absolute path.
 
-```yaml
-  import_gvcfs:
-    runtime: 7200m
-    constraint: cascadelake
-    slurm_extra: "--cpu-freq=High-High:Performance"
-    slurm_partition: 5days
-    threads: 6
-    cpus_per_task: 6
-    mem: 25000MB
-```
+## Conventions
 
-In this instance, we are requesting a job on a SLURM cluster with a runtime of 7200 minutes, a specific constraint (i.e. cascadelake), a specific partition (i.e. 5days), 6 threads, 6 CPUs per task, and 25000MB of memory.
-These resource definitions are specific to the Weng Lab's SLURM cluster. If you are running the pipeline on your own cluster, you'll need to adjust these values accordingly. We recommend consulting the [snakemake-executor-plugin-surm documentation](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html) for further information.
+The workflow follows the
+[Nextstrain Snakemake style guide](https://docs.nextstrain.org/en/latest/reference/snakemake-style-guide.html)
+and [Snakemake's best practices](https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html):
 
-### Running the Pipeline
+- No `run:` blocks.
+- Raw, triple-quoted `shell` blocks (`r"""`), one option per line.
+- Every interpolation uses `:q` quoting, except inside a double-quoted string
+  such as GATK's `--java-options`.
+- Config reaches `shell` through `params:` (a `lambda`), never directly.
+- `input:` and `output:` are literal path strings. All paths are relative.
+- Rules tee logs to file and terminal (`exec &> >(tee {log:q})`).
+- Shell blocks end with `sync {output:q}`. On a shared filesystem, Snakemake's
+  first stat of an output from the submit host otherwise waits for the
+  writing node to flush it.
+- Every rule has `log:` and `benchmark:`. Each names its pixi env in `software:`.
+- Every rule declares its real outputs. There are no sentinel files and no `localrules`.
 
-With the hard part out of the way, you can now run the pipeline:
+## Known issues
 
-```bash
-snakemake --workflow-profile profile/slurm 
-```
+These legacy behaviors stay to keep outputs identical to the production results.
 
-> [!NOTE]
-> It is recommended that you run the pipeline in dry run mode first (add the `-n` flag). Also note that `snakemake` must be ran in the root of this repository.
-
-This will run the pipeline and produce all outputs to a directory `results`.
-
-### What if I cannot run on a SLURM cluster?
-
-If you cannot run the pipeline on a SLURM cluster, you can run it locally. However, this is not a supported use case.
-
-To run locally, go to the [workflow/Snakefile](workflow/Snakefile) and comment out the following lines:
-
-```python
-  # # Testing
-  # import_gvcfs,
-  # genotype_gvcfs,
-  # hard_filter,
-  # gather_sites_only_vcfs,
-  # extract_variant_annotations,
-  # train_variant_annotations_model,
-  # score_variant_annotations,
-  # gather_final_vcf,
-  # collect_variant_calling_metrics,
-```
-
-These are rule names. When uncommented, under the `localrules` directive, they will execute on the local machine.
+- The sample check needs more than `sample_num_threshold` samples. WARP needs
+  at least that many. The message says "more than 50" whatever the threshold.
+- `onstart` deletes `.tmp` even when `tmp_dir` points elsewhere.
+- `import_gvcfs` tars each GenomicsDB workspace, and nothing reads the tar.
+- `collect_variant_calling_metrics` bgzips and reheaders the whole dbSNP VCF on
+  every run.
 
 ## References
 
@@ -129,4 +177,4 @@ These are rule names. When uncommented, under the `localrules` directive, they w
 
 ## Questions
 
-If you have any questions or would like to provide constructive feedback, please open an issue or reach out to the MOHD DACC.
+Open an issue or contact the MOHD DACC.
