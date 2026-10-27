@@ -4,6 +4,7 @@
 name = "joint-genotyping-smk"
 channels = ["conda-forge"]
 platforms = ["linux-64"]
+exclude-newer = "7d"
 
 [dependencies]
 python = "3.13.*"
@@ -17,3 +18,12 @@ snakemake-executor-plugin-slurm-jobstep = "==0.6.1"
 
 [tasks]
 test = "snakemake --snakefile workflow/Snakefile --directory .tests/integration --profile profiles/local --cores 2 --forceall"
+
+[exclude-newer]
+ca-certificates = "0d"
+certifi = "0d"
+pip = "0d"
+
+[pypi-exclude-newer]
+certifi = "0d"
+pip = "0d"
