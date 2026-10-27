@@ -65,7 +65,7 @@ set-resources:              # JVM heaps leave rule-specific headroom below mem_m
     runtime: 240m
     slurm_partition: 4hours
     constraint: cascadelake
-    slurm_extra: "-cpu-freq=High-High:Performance"
+    slurm_extra: "--cpu-freq=High-High:Performance"
   train_variant_annotations_model:
     mem_mb: 24000 * attempt
     runtime: 240m
