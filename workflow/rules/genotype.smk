@@ -28,6 +28,8 @@ rule split_interval_list:
             -R {input.fasta:q} \
             -mode {params.scatter_mode:q} \
             --interval-merging-rule OVERLAPPING_ONLY
+
+        sync {output:q}
         """
 
 
@@ -62,6 +64,8 @@ rule import_gvcfs:
             --consolidate
 
         tar -cvf {output.tar:q} {output.workspace:q}
+
+        sync {output:q}
         """
 
 
@@ -98,6 +102,8 @@ rule genotype_gvcfs:
             -V gendb://{input.workspace:q} \
             -L {input.interval_list:q} \
             --merge-input-intervals
+
+        sync {output:q}
         """
 
 
@@ -135,6 +141,8 @@ rule hard_filter:
             --TMP_DIR {params.tmp_dir:q} \
             -I {output.vcf:q} \
             -O {output.sites_only_vcf:q}
+
+        sync {output:q}
         """
 
 
@@ -169,4 +177,6 @@ rule gather_sites_only_vcfs:
             --output {output.vcf:q}
 
         tabix {output.vcf:q}
+
+        sync {output:q}
         """

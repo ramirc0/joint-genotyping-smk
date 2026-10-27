@@ -42,4 +42,6 @@ rule collect_variant_calling_metrics:
             --OUTPUT {params.prefix:q} \
             --THREAD_COUNT {threads:q} \
             --TARGET_INTERVALS {input.eval_interval_list:q}
+
+        sync {output:q}
         """

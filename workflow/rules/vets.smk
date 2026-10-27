@@ -31,6 +31,8 @@ rule extract_variant_annotations:
             -O {params.prefix:q} \
             {params.annotations:q} \
             {params.resource_args:q}
+
+        sync {output:q}
         """
 
 
@@ -58,6 +60,8 @@ rule train_variant_annotations_model:
             --tmp-dir {params.tmp_dir:q} \
             --annotations-hdf5 {input:q} \
             -O {params.prefix:q}
+
+        sync {output:q}
         """
 
 
@@ -97,6 +101,8 @@ rule score_variant_annotations:
             {params.resource_args:q} \
             --resource:extracted,extracted=true {input.extracted_vcf:q} \
             --model-prefix {params.model_prefix:q}
+
+        sync {output:q}
         """
 
 
@@ -131,4 +137,6 @@ rule gather_final_vcf:
             --output {output.vcf:q}
 
         tabix {output.vcf:q}
+
+        sync {output:q}
         """
