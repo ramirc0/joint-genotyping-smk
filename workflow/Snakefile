@@ -1,59 +1,24 @@
-configfile: "config/config.yml"
-
-if config["input"].get("slack_webhook_url"):
-  URL=config["input"]["slack_webhook_url"]
-  onstart:
-    shell("rm -rf .tmp")
-    tmp_dir = config["params"].get("tmp_dir")
-    shell(f"mkdir -p {tmp_dir}")
-    shell("curl -X POST -H \"Content-Type: application/json\" -d '{{\"text\":\"Snakemake Started 🚀\"}}' {URL}")
-  onsuccess:
-    shell("curl -X POST -H \"Content-Type: application/json\" -d '{{\"text\":\"Snakemake Finished Successfully! ✅\"}}' {URL}")
-  onerror:
-    shell("curl -X POST -H \"Content-Type: application/json\" -d '{{\"text\":\"Snakemake Finished With Errors! ❌\"}}' {URL}")
-else:
-  onstart:
-    shell("rm -r .tmp")
-    tmp_dir = config["params"].get("tmp_dir")
-    shell(f"mkdir -p {tmp_dir}")
-
 include: "rules/common.smk"
-include: "rules/check_sample_map.smk"
-include: "rules/split_interval_list.smk"
-include: "rules/import_gvcfs.smk"
-include: "rules/genotype_gvcfs.smk"
-include: "rules/hard_filter.smk"
-include: "rules/gather_sites_only_vcfs.smk"
-include: "rules/extract_variant_annotations.smk"
-include: "rules/train_variant_annotations_model.smk"
-include: "rules/score_variant_annotations.smk"
-include: "rules/gather_final_vcf.smk"
-include: "rules/collect_variant_calling_metrics.smk"
+include: "rules/genotype.smk"
+include: "rules/vets.smk"
+include: "rules/qc.smk"
 
-localrules:
-  check_sample_map,
-  split_interval_list,
-  # Testing
-  import_gvcfs,
-  genotype_gvcfs,
-  hard_filter,
-  gather_sites_only_vcfs,
-  extract_variant_annotations,
-  train_variant_annotations_model,
-  score_variant_annotations,
-  gather_final_vcf,
-  collect_variant_calling_metrics,
+
+onstart:
+    shell("rm -rf .tmp")
+    shell("mkdir -p {config[tmp_dir]:q}")
+    notify_slack("Snakemake Started 🚀")
+
+
+onsuccess:
+    notify_slack("Snakemake Finished Successfully! ✅")
+
+
+onerror:
+    notify_slack("Snakemake Finished With Errors! ❌")
+
 
 rule all:
-  input:
-    "results/sample_map.ok",
-    "results/split_interval_list.ok",
-    expand("results/import_gvcfs/{scatter}.ok", scatter=range(config["params"].get("scatter_count"))),
-    expand("results/genotype_gvcfs/{scatter}.ok", scatter=range(config["params"].get("scatter_count"))),
-    expand("results/hard_filter/{scatter}.ok", scatter=range(config["params"].get("scatter_count"))),
-    "results/gather_sites_only_vcfs.ok",
-    "results/extract_variant_annotations.ok",
-    "results/train_variant_annotations_model.ok",
-    expand("results/score_variant_annotations/{scatter}.ok", scatter=range(config["params"].get("scatter_count"))),
-    "results/gather_final_vcf.ok",
-    "results/collect_variant_calling_metrics.ok",
+    input:
+        f"{OUTDIR}/{CALLSET}.final.vcf.gz",
+        f"{OUTDIR}/{CALLSET}.variant_calling_summary_metrics",
