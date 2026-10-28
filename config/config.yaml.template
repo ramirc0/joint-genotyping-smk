@@ -3,7 +3,7 @@ callset_name: callset
 outdir: results
 pixi_env: default
 run_id: default          # outputs go under results/<run_id>/; override per run
-tmp_dir: .tmp            # GATK and Picard scratch; MUST NOT be a noexec mount
+tmp_dir: .tmp            # GATK and Picard scratch, emptied at start; MUST NOT be a noexec mount
 slack_webhook_url: null  # Slack app webhook for start and finish messages
 
 references:

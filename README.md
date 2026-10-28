@@ -89,7 +89,7 @@ with a GATK `.idx`.
 | `outdir` | Results root. |
 | `run_id` | Run name. Outputs go under `results/<run_id>/`. |
 | `pixi_env` | Environment of `workflow/envs/pixi.toml` that the metrics rule uses. |
-| `tmp_dir` | GATK and Picard scratch. It MUST NOT sit on a `noexec` mount, as `/tmp` is on some hosts. |
+| `tmp_dir` | GATK and Picard scratch. Each run empties it at start, so it MUST hold nothing else. It MUST NOT sit on a `noexec` mount, as `/tmp` is on some hosts. |
 | `slack_webhook_url` | Optional [Slack app](https://docs.slack.dev/app-management/quickstart-app-settings/) webhook. The run posts when it starts, succeeds or fails. |
 | `references.fasta` | Reference genome FASTA. |
 | `references.dbsnp_vcf` | dbSNP VCF for GenotypeGVCFs and the metrics. |
@@ -162,7 +162,6 @@ and [Snakemake's best practices](https://snakemake.readthedocs.io/en/stable/snak
 
 These legacy behaviors stay to keep outputs identical to the production results.
 
-- `onstart` deletes `.tmp` even when `tmp_dir` points elsewhere.
 - `import_gvcfs` tars each GenomicsDB workspace, and nothing reads the tar.
 - `collect_variant_calling_metrics` bgzips and reheaders the whole dbSNP VCF on
   every run.

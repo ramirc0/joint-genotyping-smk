@@ -8,8 +8,7 @@ include: "rules/qc.smk"
 # on a fresh or relocked env, so install it once before any job starts.
 onstart:
     shell("pixi install --manifest-path {workflow.basedir:q}/envs/pixi.toml --all --locked")
-    shell("rm -rf .tmp")
-    shell("mkdir -p {config[tmp_dir]:q}")
+    shell("rm -rf {config[tmp_dir]:q} && mkdir -p {config[tmp_dir]:q}")
     notify_slack("Snakemake Started 🚀")
 
 
