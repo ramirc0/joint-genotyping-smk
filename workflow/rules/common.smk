@@ -25,8 +25,9 @@ REFERENCE = {
     "fasta_dict": str(Path(REFERENCE_FASTA).with_suffix(".dict")),
 }
 
-SCATTERS = range(config["scatter_count"])
-SCATTERED_INTERVAL_LIST = f"{OUTDIR}/scatter_dir/{{scatter:04d}}-scattered.interval_list"
+SCATTER_DIGITS = max(4, len(str(config["scatter_count"] - 1)))
+SCATTERS = [f"{i:0{SCATTER_DIGITS}d}" for i in range(config["scatter_count"])]
+SCATTERED_INTERVAL_LIST = f"{OUTDIR}/scatter_dir/{{scatter}}-scattered.interval_list"
 
 VETS_RESOURCES = {
     "hapmap,training=true,calibration=true": REFS["hapmap_resource_vcf"],

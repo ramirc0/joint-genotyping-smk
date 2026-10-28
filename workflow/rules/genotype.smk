@@ -11,6 +11,7 @@ rule split_interval_list:
         scatter_dir=f"{OUTDIR}/scatter_dir",
         scatter_count=lambda w: config["scatter_count"],
         scatter_mode=lambda w: config["scatter_mode"],
+        digits=SCATTER_DIGITS,
     log:
         f"{LOGDIR}/split_interval_list.txt",
     benchmark:
@@ -27,6 +28,7 @@ rule split_interval_list:
             -scatter {params.scatter_count:q} \
             -R {input.fasta:q} \
             -mode {params.scatter_mode:q} \
+            --interval-file-num-digits {params.digits:q} \
             --interval-merging-rule OVERLAPPING_ONLY
 
         sync {output:q}
@@ -37,7 +39,7 @@ rule split_interval_list:
 rule import_gvcfs:
     input:
         sample_map=SAMPLE_MAP,
-        interval_list=lambda w: SCATTERED_INTERVAL_LIST.format(scatter=int(w.scatter)),
+        interval_list=SCATTERED_INTERVAL_LIST,
     output:
         workspace=directory(f"{OUTDIR}/import_gvcfs/{{scatter}}"),
         tar=f"{OUTDIR}/import_gvcfs/{{scatter}}.tar",
@@ -75,7 +77,7 @@ rule genotype_gvcfs:
     input:
         **REFERENCE,
         workspace=f"{OUTDIR}/import_gvcfs/{{scatter}}",
-        interval_list=lambda w: SCATTERED_INTERVAL_LIST.format(scatter=int(w.scatter)),
+        interval_list=SCATTERED_INTERVAL_LIST,
         dbsnp_vcf=REFS["dbsnp_vcf"],
     output:
         vcf=f"{OUTDIR}/genotype_gvcfs/{CALLSET}.{{scatter}}.vcf.gz",
