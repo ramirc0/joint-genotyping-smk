@@ -41,6 +41,7 @@ workflow/
     vets.smk             ExtractVariantAnnotations, Train, Score, final gather
     qc.smk               dbSNP reheader, CollectVariantCallingMetrics
   envs/pixi.toml         rule envs (pixi workspace): default and gatk
+  envs/gatk4-main/       GATK recipe without bioconda's Java 17 pin
 .tests/integration/      100 1000 Genomes samples on a 348 kb chr20 window
 profiles/
   local/config.yaml      local execution
@@ -149,8 +150,10 @@ The launcher env (`pixi.toml` at the root) has Snakemake main and its plugins
 for pixi deployment and SLURM. The rule envs live in a second pixi workspace,
 `workflow/envs/`. Its `pixi.lock` pins every package. The `pixi` binary MUST be on `PATH`.
 
-- `gatk` runs GATK 4.7.0.0 on OpenJDK 17. Its Python stack, which the VETS
+- `gatk` runs GATK 4.7.0.0 on OpenJDK 25. Its Python stack, which the VETS
   scorer runs, matches the `broadinstitute/gatk:4.7.0.0` image, MKL BLAS included.
+  Bioconda pins GATK to OpenJDK 17, so `workflow/envs/gatk4-main/` rebuilds its
+  recipe without that pin.
 - `default` runs Picard 3.5.0 on OpenJDK 25, and bcftools.
 
 Both workspaces exclude packages published in the last 7 days. The exceptions
