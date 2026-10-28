@@ -9,7 +9,7 @@ references:
   fasta: resources/chr20_toy.fasta
   dbsnp_vcf: resources/dbsnp138.chr20_toy.vcf
   eval_interval_list: resources/wgs_evaluation_regions.chr20_toy.interval_list
-  unpadded_interval_list: resources/hg38.even.handcurated.20k.chr20_toy.intervals
+  unpadded_interval_list: resources/wgs_calling_regions.handcurated.noCentromeres.noTelomeres.chr20_toy.interval_list
   hapmap_resource_vcf: resources/hapmap_3.3.chr20_toy.vcf.gz
   omni_resource_vcf: resources/1000G_omni2.5.chr20_toy.vcf.gz
   one_thousand_genomes_resource_vcf: resources/1000G_phase1.snps.high_confidence.chr20_toy.vcf.gz

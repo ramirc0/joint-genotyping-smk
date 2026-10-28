@@ -9,7 +9,7 @@ references:
   fasta: resources/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta
   dbsnp_vcf: resources/Homo_sapiens_assembly38.dbsnp138.vcf
   eval_interval_list: resources/wgs_evaluation_regions.hg38.interval_list
-  unpadded_interval_list: resources/hg38.even.handcurated.20k.intervals
+  unpadded_interval_list: resources/wgs_calling_regions.hg38.handcurated.noCentromeres.noTelomeres.interval_list
   hapmap_resource_vcf: resources/hapmap_3.3.hg38.vcf.gz
   omni_resource_vcf: resources/1000G_omni2.5.hg38.vcf.gz
   one_thousand_genomes_resource_vcf: resources/1000G_phase1.snps.high_confidence.hg38.vcf.gz

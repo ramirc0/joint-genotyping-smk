@@ -64,8 +64,11 @@ gatk IndexFeatureFile -I resources/dbsnp138.chr20_toy.vcf
         "$BROAD/wgs_evaluation_regions.hg38.interval_list"
 } > resources/wgs_evaluation_regions.chr20_toy.interval_list
 
-awk -F '[:-]' -v len="$LENGTH" '$1 == "chr20" && $3 <= len' "$BROAD/hg38.even.handcurated.20k.intervals" \
-    > resources/hg38.even.handcurated.20k.chr20_toy.intervals
+{
+    cat resources/chr20_toy.dict
+    awk -v len="$LENGTH" 'BEGIN { FS = OFS = "\t" } $1 == "chr20" && $3 <= len' \
+        "$BROAD/wgs_calling_regions.hg38.handcurated.noCentromeres.noTelomeres.interval_list"
+} > resources/wgs_calling_regions.handcurated.noCentromeres.noTelomeres.chr20_toy.interval_list
 
 # Same checks as wgs-smk's validate_gvcf, over the window's calling regions.
 for gvcf in resources/gvcfs/*.rb.g.vcf.gz; do

@@ -1,0 +1,5 @@
+@HD	VN:1.0	SO:unsorted
+@SQ	SN:chr20	LN:347695	M5:58eac7b18344b15d2b17c9215fd92d21	UR:chr20_toy.fasta
+chr20	10000	125433	+	.
+chr20	125434	250864	+	.
+chr20	250865	347695	+	.

@@ -75,7 +75,12 @@ Download the references into `resources/` (gitignored):
 
 ```bash
 curl -fsSL https://users.wenglab.org/ramirezc/mohd/resources/joint-genotyping-smk.tar.zst | tar --use-compress-program=zstd -xf -
+curl -fsSL -o resources/wgs_calling_regions.hg38.handcurated.noCentromeres.noTelomeres.interval_list \
+    https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/wgs_calling_regions.hg38.handcurated.noCentromeres.noTelomeres.interval_list
 ```
+
+The calling intervals are the Broad's hand-curated 20k list without centromeres
+and telomeres. They cover 3.02 Gb in 19,694 intervals.
 
 The `.fai` and `.dict` MUST sit beside the FASTA. dbSNP MUST be a plain VCF
 with a GATK `.idx`.
@@ -93,7 +98,7 @@ with a GATK `.idx`.
 | `references.fasta` | Reference genome FASTA. |
 | `references.dbsnp_vcf` | dbSNP VCF for GenotypeGVCFs and the metrics. |
 | `references.eval_interval_list` | Target intervals for the metrics. |
-| `references.unpadded_interval_list` | Calling intervals to scatter. |
+| `references.unpadded_interval_list` | Calling intervals to scatter. Sites outside them are not called. |
 | `references.*_resource_vcf` | HapMap, Omni, 1000G and Mills VETS resources. |
 | `sample_num_threshold` | The map needs at least this many samples, as in WARP. Default `50`. |
 | `scatter_count` | Number of scatters. About `round(0.15 * number of gVCFs)`. |
