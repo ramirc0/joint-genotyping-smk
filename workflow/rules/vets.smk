@@ -74,8 +74,6 @@ rule score_variant_annotations:
     output:
         vcf=f"{OUTDIR}/score_variant_annotations/{CALLSET}.{{scatter}}.score.vcf.gz",
         tbi=f"{OUTDIR}/score_variant_annotations/{CALLSET}.{{scatter}}.score.vcf.gz.tbi",
-        annot=f"{OUTDIR}/score_variant_annotations/{CALLSET}.{{scatter}}.score.annot.hdf5",
-        scores=f"{OUTDIR}/score_variant_annotations/{CALLSET}.{{scatter}}.score.scores.hdf5",
     params:
         tmp_dir=lambda w: config["tmp_dir"],
         prefix=f"{OUTDIR}/score_variant_annotations/{CALLSET}.{{scatter}}.score",
