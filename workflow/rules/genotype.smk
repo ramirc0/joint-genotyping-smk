@@ -35,48 +35,12 @@ rule split_interval_list:
         """
 
 
+# The GenomicsDB workspace lives on the job's local disk and is discarded.
 # GenomicsDB's native memory lives outside the JVM heap, hence the 10 GB of headroom.
-rule import_gvcfs:
-    input:
-        sample_map=SAMPLE_MAP,
-        interval_list=SCATTERED_INTERVAL_LIST,
-    output:
-        workspace=directory(f"{OUTDIR}/import_gvcfs/{{scatter}}"),
-        tar=f"{OUTDIR}/import_gvcfs/{{scatter}}.tar",
-    params:
-        tmp_dir=lambda w: config["tmp_dir"],
-        batch_size=lambda w: config["batch_size"],
-    log:
-        f"{LOGDIR}/import_gvcfs/{{scatter}}.txt",
-    benchmark:
-        f"{BENCHDIR}/import_gvcfs/{{scatter}}.tsv",
-    software:
-        GATK_ENV
-    shell:
-        r"""
-        exec &> >(tee {log:q})
-
-        gatk --java-options "-Xms8000m -Xmx$(({resources.mem_mb} - 10000))m" \
-            GenomicsDBImport \
-            --tmp-dir {params.tmp_dir:q} \
-            --genomicsdb-workspace-path {output.workspace:q} \
-            --batch-size {params.batch_size:q} \
-            -L {input.interval_list:q} \
-            --sample-name-map {input.sample_map:q} \
-            --reader-threads {threads:q} \
-            --merge-input-intervals \
-            --consolidate
-
-        tar -cvf {output.tar:q} {output.workspace:q}
-
-        sync {output:q}
-        """
-
-
 rule genotype_gvcfs:
     input:
         **REFERENCE,
-        workspace=f"{OUTDIR}/import_gvcfs/{{scatter}}",
+        sample_map=SAMPLE_MAP,
         interval_list=SCATTERED_INTERVAL_LIST,
         dbsnp_vcf=REFS["dbsnp_vcf"],
     output:
@@ -84,6 +48,7 @@ rule genotype_gvcfs:
         tbi=f"{OUTDIR}/genotype_gvcfs/{CALLSET}.{{scatter}}.vcf.gz.tbi",
     params:
         tmp_dir=lambda w: config["tmp_dir"],
+        batch_size=lambda w: config["batch_size"],
     log:
         f"{LOGDIR}/genotype_gvcfs/{{scatter}}.txt",
     benchmark:
@@ -94,7 +59,23 @@ rule genotype_gvcfs:
         r"""
         exec &> >(tee {log:q})
 
-        gatk --java-options "-Xms8000m -Xmx{resources.mem_mb}m" \
+        WORKDIR=$(mktemp -d)
+        trap 'rm -rf "$WORKDIR"' EXIT
+        # TileDB refuses an existing directory as a workspace.
+        WORKSPACE="$WORKDIR/genomicsdb"
+
+        gatk --java-options "-Xms8000m -Xmx$(({resources.mem_mb} - 10000))m" \
+            GenomicsDBImport \
+            --tmp-dir {params.tmp_dir:q} \
+            --genomicsdb-workspace-path "$WORKSPACE" \
+            --batch-size {params.batch_size:q} \
+            -L {input.interval_list:q} \
+            --sample-name-map {input.sample_map:q} \
+            --reader-threads {threads:q} \
+            --merge-input-intervals \
+            --consolidate
+
+        gatk --java-options "-Xms8000m -Xmx$(({resources.mem_mb} - 10000))m" \
             GenotypeGVCFs \
             --tmp-dir {params.tmp_dir:q} \
             -R {input.fasta:q} \
@@ -103,7 +84,7 @@ rule genotype_gvcfs:
             -G StandardAnnotation \
             -G AS_StandardAnnotation \
             --only-output-calls-starting-in-intervals \
-            -V gendb://{input.workspace:q} \
+            -V "gendb://$WORKSPACE" \
             -L {input.interval_list:q} \
             --merge-input-intervals
 

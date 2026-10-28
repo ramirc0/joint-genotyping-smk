@@ -25,7 +25,6 @@ default-resources:
 
 set-threads:
   split_interval_list: 2
-  import_gvcfs: 6
   genotype_gvcfs: 2
   hard_filter: 2
   gather_sites_only_vcfs: 2
@@ -40,16 +39,10 @@ set-resources:              # JVM heaps leave rule-specific headroom below mem_m
   split_interval_list:
     mem_mb: 62500 * attempt
     runtime: 30m
-  import_gvcfs:
-    mem_mb: 64000 * attempt
-    runtime: 7200m
-    slurm_partition: 5days
-    constraint: cascadelake
-    slurm_extra: "--cpu-freq=High-High:Performance"
   genotype_gvcfs:
-    mem_mb: 26000 * attempt
-    runtime: 7200m
-    slurm_partition: 5days
+    mem_mb: 32000 * attempt
+    runtime: 720m
+    slurm_partition: 12hours
     constraint: cascadelake
     slurm_extra: "--cpu-freq=High-High:Performance"
   hard_filter:

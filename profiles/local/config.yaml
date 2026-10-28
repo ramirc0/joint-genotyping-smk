@@ -19,7 +19,6 @@ default-resources:
 
 set-threads:
   split_interval_list: 2
-  import_gvcfs: 6
   genotype_gvcfs: 2
   hard_filter: 2
   gather_sites_only_vcfs: 2
@@ -32,8 +31,7 @@ set-threads:
 
 set-resources:              # JVM heaps leave rule-specific headroom below mem_mb
   split_interval_list: {mem_mb: 62500}
-  import_gvcfs: {mem_mb: 64000}
-  genotype_gvcfs: {mem_mb: 26000}
+  genotype_gvcfs: {mem_mb: 32000}
   hard_filter: {mem_mb: 4000}
   gather_sites_only_vcfs: {mem_mb: 7000}
   extract_variant_annotations: {mem_mb: 12000}

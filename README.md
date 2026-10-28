@@ -111,8 +111,7 @@ Everything goes under `results/<run_id>/`. Logs and benchmarks go to
 | Path | Contents |
 |---|---|
 | `scatter_dir/` | Scattered interval lists |
-| `import_gvcfs/<scatter>/`, `<scatter>.tar` | GenomicsDB workspace and its tar |
-| `genotype_gvcfs/` | Per-scatter joint calls |
+| `genotype_gvcfs/` | Per-scatter joint calls. Each job builds its GenomicsDB workspace on local disk and discards it. |
 | `hard_filter/` | ExcessHet-filtered and sites-only VCFs |
 | `<callset>.sites_only.vcf.gz` | Gathered sites-only VCF |
 | `<callset>.extract.*` | VETS annotations and labeled sites |
@@ -158,12 +157,6 @@ and [Snakemake's best practices](https://snakemake.readthedocs.io/en/stable/snak
   writing node to flush it.
 - Every rule has `log:` and `benchmark:`. Each names its pixi env in `software:`.
 - Every rule declares its real outputs. There are no sentinel files and no `localrules`.
-
-## Known issues
-
-These legacy behaviors stay to keep outputs identical to the production results.
-
-- `import_gvcfs` tars each GenomicsDB workspace, and nothing reads the tar.
 
 ## References
 
