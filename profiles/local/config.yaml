@@ -27,6 +27,7 @@ set-threads:
   train_variant_annotations_model: 2
   score_variant_annotations: 2
   gather_final_vcf: 2
+  prepare_dbsnp: 4
   collect_variant_calling_metrics: 4
 
 set-resources:              # JVM heaps leave rule-specific headroom below mem_mb

@@ -23,7 +23,7 @@ workflow/
     common.smk           config, sample map checks, path constants, helpers
     genotype.smk         SplitIntervals, GenomicsDBImport, GenotypeGVCFs, hard filter, gather
     vets.smk             ExtractVariantAnnotations, Train, Score, final gather
-    qc.smk               CollectVariantCallingMetrics
+    qc.smk               dbSNP reheader, CollectVariantCallingMetrics
   envs/pixi.toml         rule envs (pixi workspace): default and gatk
 .tests/integration/      100 1000 Genomes samples on a 348 kb chr20 window
 profiles/
@@ -119,6 +119,7 @@ Everything goes under `results/<run_id>/`. Logs and benchmarks go to
 | `<callset>.train.{snp,indel}.*` | VETS scorers and score files |
 | `score_variant_annotations/` | Per-scatter scored VCFs |
 | `<callset>.final.vcf.gz` | Final joint VCF |
+| `dbsnp.vcf.gz` | dbSNP bgzipped, with the reference contig lines Picard needs |
 | `<callset>.variant_calling_{detail,summary}_metrics` | Picard metrics against dbSNP |
 
 ## Environment
@@ -163,8 +164,6 @@ and [Snakemake's best practices](https://snakemake.readthedocs.io/en/stable/snak
 These legacy behaviors stay to keep outputs identical to the production results.
 
 - `import_gvcfs` tars each GenomicsDB workspace, and nothing reads the tar.
-- `collect_variant_calling_metrics` bgzips and reheaders the whole dbSNP VCF on
-  every run.
 
 ## References
 
