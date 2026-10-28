@@ -80,6 +80,8 @@ rule score_variant_annotations:
         model_prefix=f"{OUTDIR}/{CALLSET}.train",
         annotations=lambda w: repeat_flag("-A", config["snp_recalibration_annotation_values"]),
         resource_args=VETS_RESOURCE_ARGS,
+        snp_threshold=lambda w: config["snp_calibration_sensitivity_threshold"],
+        indel_threshold=lambda w: config["indel_calibration_sensitivity_threshold"],
     log:
         f"{LOGDIR}/score_variant_annotations/{{scatter}}.txt",
     benchmark:
@@ -98,7 +100,9 @@ rule score_variant_annotations:
             {params.annotations:q} \
             {params.resource_args:q} \
             --resource:extracted,extracted=true {input.extracted_vcf:q} \
-            --model-prefix {params.model_prefix:q}
+            --model-prefix {params.model_prefix:q} \
+            --snp-calibration-sensitivity-threshold {params.snp_threshold:q} \
+            --indel-calibration-sensitivity-threshold {params.indel_threshold:q}
 
         sync {output:q}
         """

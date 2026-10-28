@@ -101,6 +101,8 @@ with a GATK `.idx`.
 | `batch_size` | GenomicsDBImport `--batch-size`. |
 | `excess_het_threshold` | Sites with a larger ExcessHet get the `ExcessHet` filter. |
 | `snp_recalibration_annotation_values` | VETS annotations, passed as `-A`. |
+| `snp_calibration_sensitivity_threshold` | SNPs at or above this calibration sensitivity get `LOW_SCORE`. Default `0.997`, WARP's VQSR SNP level. |
+| `indel_calibration_sensitivity_threshold` | The same for indels. Default `0.99`, WARP's VQSR indel level. |
 
 ## Outputs
 

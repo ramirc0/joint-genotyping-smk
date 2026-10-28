@@ -21,3 +21,5 @@ scatter_mode: BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW
 batch_size: 50
 excess_het_threshold: 54.69
 snp_recalibration_annotation_values: [QD, MQRankSum, ReadPosRankSum, FS, MQ, SOR, DP]
+snp_calibration_sensitivity_threshold: 0.997
+indel_calibration_sensitivity_threshold: 0.99
