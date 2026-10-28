@@ -117,8 +117,8 @@ with a GATK `.idx`.
 | `references.unpadded_interval_list` | Calling intervals to scatter. Sites outside them are not called. |
 | `references.*_resource_vcf` | HapMap, Omni, 1000G and Mills VETS resources. |
 | `sample_num_threshold` | The map needs at least this many samples, as in WARP. Default `50`. |
-| `scatter_count` | Number of scatters. About `round(0.15 * number of gVCFs)`. |
-| `scatter_mode` | SplitIntervals `-mode`. |
+| `scatter_count` | Number of scatters. About 2.5 times the number of gVCFs, as in WARP's WGS inputs. Per-scatter work then stays near constant, and the SLURM profile's 720-minute limit for `genotype_gvcfs` assumes it. |
+| `scatter_mode` | SplitIntervals `-mode`. `INTERVAL_SUBDIVISION` splits intervals to write exactly `scatter_count` lists. Modes that keep intervals whole write fewer on this calling list, about 206 at most, and the run fails. |
 | `batch_size` | GenomicsDBImport `--batch-size`. |
 | `excess_het_threshold` | Sites with a larger ExcessHet get the `ExcessHet` filter. |
 | `snp_recalibration_annotation_values` | VETS annotations, passed as `-A`. |

@@ -16,8 +16,8 @@ references:
   mills_resource_vcf: resources/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
 
 sample_num_threshold: 50
-scatter_count: 2         # about round(0.15 * number of gVCFs)
-scatter_mode: BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW
+scatter_count: 2         # about 2.5 x the number of gVCFs, as in WARP's WGS inputs
+scatter_mode: INTERVAL_SUBDIVISION
 batch_size: 50
 excess_het_threshold: 54.69
 snp_recalibration_annotation_values: [QD, MQRankSum, ReadPosRankSum, FS, MQ, SOR, DP]
