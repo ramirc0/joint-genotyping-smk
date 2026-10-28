@@ -3,6 +3,7 @@ name = "joint-genotyping-smk-envs"
 channels = ["conda-forge", "bioconda"]
 platforms = ["linux-64"]
 exclude-newer = "7d"
+preview = ["pixi-build"]
 
 # bioconda's bcftools 1.25 pins gsl 2.6, which conflicts with Picard's r-base.
 [dependencies]
@@ -11,12 +12,12 @@ htslib = "==1.24"
 openjdk = "==25.0.2"
 picard = "==3.5.0"
 
-# Bioconda ships GATK 4.7 only as gatk4-main. GATK 4.7 requires Java 17.
+# bioconda pins gatk4-main to OpenJDK 17, though GATK builds for 17 or later. The local recipe lifts the pin.
 # The Python stack that TrainVariantAnnotationsModel and ScoreVariantAnnotations run
 # matches broadinstitute/gatk:4.7.0.0's conda env, MKL BLAS included.
 [feature.gatk.dependencies]
-gatk4-main = "==4.7.0.0"
-openjdk = "==17.0.18"
+gatk4-main = { path = "gatk4-main" }
+openjdk = "==25.0.2"
 htslib = "==1.25"
 python = "==3.10.13"
 dill = "==0.3.7"

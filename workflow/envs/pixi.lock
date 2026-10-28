@@ -119,7 +119,6 @@ environments:
     - url: https://conda.anaconda.org/bioconda/
     packages:
       linux-64:
-      - conda: https://conda.anaconda.org/bioconda/linux-64/gatk4-main-4.7.0.0-h9ee0642_0.conda
       - conda: https://conda.anaconda.org/bioconda/linux-64/htslib-1.25-ha79157c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-8_kmp_llvm.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/alsa-lib-1.2.16.1-h7cc23a3_1.conda
@@ -182,7 +181,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/mkl-2022.2.1-h6508926_16999.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ncurses-6.6-hdb14827_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/numpy-1.26.2-py310hb13e2d6_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-17.0.18-h1602c4f_18.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-25.0.2-h1602c4f_26.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.6.5-h781a0a9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pandas-2.1.3-py310hcc13569_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pcre2-10.47-h8b3dc9c_1.conda
@@ -229,6 +228,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/six-1.17.0-pyhe01879c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/threadpoolctl-3.6.0-pyhecae5ae_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2026c-h151e31d_0.conda
+      - conda_source: gatk4-main[4a212fc9] @ gatk4-main
 packages:
 - conda: https://conda.anaconda.org/bioconda/linux-64/bcftools-1.24-h487d631_1.conda
   sha256: dab430877b77dd490b03da46f3718d6d4446a2a9e693a58ba65aa63932f3dd03
@@ -246,17 +246,6 @@ packages:
     - bcftools >=1.24,<2.0a0
   size: 968251
   timestamp: 1784058414878
-- conda: https://conda.anaconda.org/bioconda/linux-64/gatk4-main-4.7.0.0-h9ee0642_0.conda
-  sha256: d374063a9ed08c1b7251ab48966b9fcd0d809fcd762a0ec05c916761bfc3cef6
-  md5: 7603c3c137bcf1648c324a4d7886a55b
-  depends:
-  - openjdk 17.*
-  - python
-  license: BSD-3-Clause
-  license_family: BSD
-  run_exports: {}
-  size: 393139911
-  timestamp: 1787023765337
 - conda: https://conda.anaconda.org/bioconda/linux-64/htslib-1.24-ha79157c_0.conda
   sha256: 97e0f0b8700f56b1ade3034f81070ede705fce3ef9a1b5f15e79e3eb9997ac17
   md5: 232775112c6fea38e9e7c25d2a58d7d2
@@ -1483,42 +1472,6 @@ packages:
     - numpy >=1.26.2,<2.0a0
   size: 6922736
   timestamp: 1700875005993
-- conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-17.0.18-h1602c4f_18.conda
-  sha256: d9a20918e34a68683f354119d2c7127f6ae51134e8de62f23461b590878bf377
-  md5: b6596b03736e49cc60360fff8e201c16
-  depends:
-  - xorg-libx11
-  - xorg-libxext
-  - xorg-libxi
-  - xorg-libxrender
-  - xorg-libxtst
-  - libstdcxx >=15
-  - libgcc >=15
-  - __glibc >=2.17,<3.0.a0
-  - alsa-lib >=1.2.16.1,<1.3.0a0
-  - xorg-libxrandr >=1.5.5,<2.0a0
-  - lcms2 >=2.19.1,<3.0a0
-  - xorg-libxt >=1.3.1,<2.0a0
-  - xorg-libxtst >=1.2.5,<2.0a0
-  - libzlib >=1.3.2,<2.0a0
-  - giflib >=6.1.3,<6.2.0a0
-  - libharfbuzz >=14.4.0
-  - xorg-libxrender >=0.9.12,<0.10.0a0
-  - xorg-libxi >=1.8.3,<2.0a0
-  - libpng >=1.6.58,<1.7.0a0
-  - xorg-libx11 >=1.8.13,<2.0a0
-  - libcups >=2.3.3,<2.4.0a0
-  - xorg-libxext >=1.3.7,<2.0a0
-  - libfreetype >=2.14.3
-  - libfreetype6 >=2.14.3
-  - fontconfig >=2.18.3,<3.0a0
-  - fonts-conda-ecosystem
-  - libjpeg-turbo >=3.2.0,<4.0a0
-  license: GPL-2.0-or-later WITH Classpath-exception-2.0
-  license_family: GPL
-  run_exports: {}
-  size: 174182176
-  timestamp: 1787924912145
 - conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-25.0.2-h1602c4f_26.conda
   sha256: 703aa71462f1b7b8804e1ba6f2663073c47808c693e8a912eb0ce3191ebe90fb
   md5: 920916925a5d103cf923d51813cc947d
@@ -2326,3 +2279,9 @@ packages:
   run_exports: {}
   size: 118849
   timestamp: 1784250406640
+- conda_source: gatk4-main[4a212fc9] @ gatk4-main
+  variants:
+    target_platform: linux-64
+  depends:
+  - openjdk >=17
+  - python
