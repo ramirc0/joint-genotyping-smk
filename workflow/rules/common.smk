@@ -10,19 +10,17 @@ from snakemake.exceptions import WorkflowError
 configfile: "config/config.yaml"
 
 
-RESULTS = config["outdir"]
 RUN_ID = config.get("run_id", "default")
-OUTDIR = f"{RESULTS}/{RUN_ID}"
+OUTDIR = f"{config['outdir']}/{RUN_ID}"
 LOGDIR = f"logs/{RUN_ID}"
 BENCHDIR = f"benchmarks/{RUN_ID}"
 REFS = config["references"]
 CALLSET = config["callset_name"]
 
-REFERENCE_FASTA = REFS["fasta"]
 REFERENCE = {
-    "fasta": REFERENCE_FASTA,
-    "fasta_index": f"{REFERENCE_FASTA}.fai",
-    "fasta_dict": str(Path(REFERENCE_FASTA).with_suffix(".dict")),
+    "fasta": REFS["fasta"],
+    "fasta_index": f"{REFS['fasta']}.fai",
+    "fasta_dict": str(Path(REFS["fasta"]).with_suffix(".dict")),
 }
 
 SCATTER_DIGITS = max(4, len(str(config["scatter_count"] - 1)))
