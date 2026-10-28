@@ -17,7 +17,8 @@ snakemake-executor-plugin-slurm = { git = "https://github.com/snakemake/snakemak
 snakemake-executor-plugin-slurm-jobstep = "==0.6.1"
 
 [tasks]
-test = "snakemake --snakefile workflow/Snakefile --directory .tests/integration --profile profiles/local --cores 2 --forceall"
+test-sample-map = "snakemake --snakefile workflow/Snakefile --directory .tests/integration --profile profiles/local --dry-run --config sample_num_threshold=100"
+test = { cmd = "snakemake --snakefile workflow/Snakefile --directory .tests/integration --profile profiles/local --cores 2 --forceall", depends-on = ["test-sample-map"] }
 
 [exclude-newer]
 ca-certificates = "0d"

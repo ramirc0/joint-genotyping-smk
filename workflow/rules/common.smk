@@ -64,8 +64,11 @@ if not all(Path(gvcf).exists() for gvcf in _sample_map["gvcf"]):
     raise WorkflowError("All GVCFs must exist.")
 if _sample_map["sample_id"].n_unique() != _sample_map.height:
     raise WorkflowError("Sample IDs must be unique.")
-if _sample_map.height <= config["sample_num_threshold"]:
-    raise WorkflowError("Sample map must have more than 50 samples for joint genotyping.")
+if _sample_map.height < config["sample_num_threshold"]:
+    raise WorkflowError(
+        f"Sample map has {_sample_map.height} samples; joint genotyping needs at least "
+        f"{config['sample_num_threshold']}."
+    )
 
 
 wildcard_constraints:

@@ -59,6 +59,7 @@ two minutes. The inputs are the reblocked gVCFs of 100 unrelated 1000 Genomes
 30x samples from a wgs-smk run, cut to `chr20:1-347695`. They cover all 26
 populations, 50 male and 50 female. A hundred samples pass the default
 `sample_num_threshold` and make GenomicsDBImport run two batches.
+A dry run first checks that a threshold equal to the sample count passes.
 `make_test_data.sh` records how the inputs were built. It is not part of the
 test.
 
@@ -67,8 +68,8 @@ test.
 The sample map is a headerless TSV. Column one is the sample ID and column two
 is its gVCF. GenomicsDBImport reads it as `--sample-name-map`. The workflow
 checks it while it parses, so a dry run fails too. It fails when a gVCF is
-missing, when a sample ID repeats, or when the map has `sample_num_threshold`
-samples or fewer.
+missing, when a sample ID repeats, or when the map has fewer than
+`sample_num_threshold` samples.
 
 Download the references into `resources/` (gitignored):
 
@@ -95,7 +96,7 @@ with a GATK `.idx`.
 | `references.eval_interval_list` | Target intervals for the metrics. |
 | `references.unpadded_interval_list` | Calling intervals to scatter. |
 | `references.*_resource_vcf` | HapMap, Omni, 1000G and Mills VETS resources. |
-| `sample_num_threshold` | The map needs more samples than this. Default `50`. |
+| `sample_num_threshold` | The map needs at least this many samples, as in WARP. Default `50`. |
 | `scatter_count` | Number of scatters. About `round(0.15 * number of gVCFs)`. |
 | `scatter_mode` | SplitIntervals `-mode`. |
 | `batch_size` | GenomicsDBImport `--batch-size`. |
@@ -161,8 +162,6 @@ and [Snakemake's best practices](https://snakemake.readthedocs.io/en/stable/snak
 
 These legacy behaviors stay to keep outputs identical to the production results.
 
-- The sample check needs more than `sample_num_threshold` samples. WARP needs
-  at least that many. The message says "more than 50" whatever the threshold.
 - `onstart` deletes `.tmp` even when `tmp_dir` points elsewhere.
 - `import_gvcfs` tars each GenomicsDB workspace, and nothing reads the tar.
 - `collect_variant_calling_metrics` bgzips and reheaders the whole dbSNP VCF on
