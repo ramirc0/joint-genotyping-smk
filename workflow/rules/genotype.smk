@@ -71,7 +71,7 @@ rule genotype_gvcfs:
             --batch-size {params.batch_size:q} \
             -L {input.interval_list:q} \
             --sample-name-map {input.sample_map:q} \
-            --reader-threads {threads:q} \
+            --bypass-feature-reader \
             --merge-input-intervals \
             --consolidate
 
