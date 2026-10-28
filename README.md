@@ -1,15 +1,31 @@
 # joint-genotyping-smk
 
 A [Snakemake](https://github.com/snakemake/snakemake) pipeline that jointly
-genotypes reblocked gVCFs. GenomicsDBImport and GenotypeGVCFs call each interval
-scatter. An ExcessHet hard filter follows. GATK's Variant Extract-Train-Score
-(VETS) tools then filter the sites, and the scatters are gathered into one VCF.
+genotypes reblocked gVCFs. One job per interval scatter imports the gVCFs into a
+GenomicsDB workspace on local disk and runs GenotypeGVCFs on it. An ExcessHet
+hard filter follows. GATK's Variant Extract-Train-Score (VETS) tools then score
+the sites and mark low scorers `LOW_SCORE`. The scatters are gathered into one
+VCF, and Picard measures it against dbSNP.
 The inputs come from
 [wgs-smk](https://github.com/christian728504/wgs-smk.git) or the
 [WARP Whole Genome Germline Single Sample pipeline](https://broadinstitute.github.io/warp/docs/Pipelines/Whole_Genome_Germline_Single_Sample/README).
 
 > [!NOTE]
 > This pipeline is based on the [WARP JointGenotyping pipeline](https://broadinstitute.github.io/warp/docs/Pipelines/JointGenotyping_Pipeline/README) by the Broad Institute, [originally licensed](https://github.com/broadinstitute/warp/blob/develop/LICENSE) under BSD. See [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES) for details.
+
+## Differences from WARP
+
+The rules follow the VETS branch of WARP JointGenotyping 1.7.3, flag for flag,
+except:
+
+- WARP filters with VQSR by default. This pipeline runs only VETS.
+- WARP's VETS branch passes no sensitivity thresholds, so it never applies
+  `LOW_SCORE`. This pipeline filters at WARP's VQSR WGS levels.
+- Import and genotype share one job. The workspace stays on local disk and is
+  not tarred.
+- GenomicsDBImport reads gVCFs with `--bypass-feature-reader`.
+- There is no fingerprint check.
+- Metrics always run on the final VCF. WARP shards them above 1,000 samples.
 
 ## Layout
 
@@ -131,14 +147,14 @@ Everything goes under `results/<run_id>/`. Logs and benchmarks go to
 
 The launcher env (`pixi.toml` at the root) has Snakemake main and its plugins
 for pixi deployment and SLURM. The rule envs live in a second pixi workspace,
-`workflow/envs/`. Its `pixi.lock` pins every package. `gatk` runs GATK 4.6.2.0
-on OpenJDK 17, with the scikit-learn stack that VETS needs. `default` runs
-Picard and bcftools. pixi MUST be on `PATH`.
+`workflow/envs/`. Its `pixi.lock` pins every package. The `pixi` binary MUST be on `PATH`.
 
-The versions match the images that produced the production results:
-`us.gcr.io/broad-gatk/gatk:latest` and `clarity001/wgs-smk:latest`, both pulled
-on 2026-07-11. conda-forge lacks their exact OpenJDK builds, so the envs use
-17.0.13 and 21.0.10.
+- `gatk` runs GATK 4.7.0.0 on OpenJDK 17. Its Python stack, which the VETS
+  scorer runs, matches the `broadinstitute/gatk:4.7.0.0` image, MKL BLAS included.
+- `default` runs Picard 3.5.0 on OpenJDK 25, and bcftools.
+
+Both workspaces exclude packages published in the last 7 days. The exceptions
+are certifi, bcftools and htslib, so their security fixes land at once.
 
 Add a dependency with `pixi add <pkg>` in `workflow/envs/`. After a hand edit,
 run `pixi lock` there (rules use `locked=True`). Any change to the manifest or
