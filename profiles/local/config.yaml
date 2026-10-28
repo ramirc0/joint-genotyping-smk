@@ -27,15 +27,15 @@ set-threads:
   score_variant_annotations: 2
   gather_final_vcf: 2
   prepare_dbsnp: 4
-  collect_variant_calling_metrics: 4
+  collect_variant_calling_metrics: 8
 
 set-resources:              # JVM heaps leave rule-specific headroom below mem_mb
-  split_interval_list: {mem_mb: 62500}
+  split_interval_list: {mem_mb: 4000}
   genotype_gvcfs: {mem_mb: 32000}
   hard_filter: {mem_mb: 4000}
   gather_sites_only_vcfs: {mem_mb: 7000}
   extract_variant_annotations: {mem_mb: 12000}
   train_variant_annotations_model: {mem_mb: 24000}
-  score_variant_annotations: {mem_mb: 24000}
+  score_variant_annotations: {mem_mb: 12000}
   gather_final_vcf: {mem_mb: 32000}
   collect_variant_calling_metrics: {mem_mb: 15000}
