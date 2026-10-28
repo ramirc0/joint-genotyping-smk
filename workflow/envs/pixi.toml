@@ -4,13 +4,12 @@ channels = ["conda-forge", "bioconda"]
 platforms = ["linux-64"]
 exclude-newer = "7d"
 
-# Versions match clarity001/wgs-smk:latest as pulled on 2026-07-11, the image that produced the production results.
-# That image ran OpenJDK 21.0.11, which conda-forge lacks.
+# bioconda's bcftools 1.25 pins gsl 2.6, which conflicts with Picard's r-base.
 [dependencies]
 bcftools = "==1.24"
 htslib = "==1.24"
-openjdk = "==21.0.10"
-picard = "==3.4.0"
+openjdk = "==25.0.2"
+picard = "==3.5.0"
 
 # Versions match us.gcr.io/broad-gatk/gatk:latest as pulled on 2026-07-11.
 # That image ran OpenJDK 17.0.12, which conda-forge lacks. Its tabix is Ubuntu's htslib 1.13. Bioconda's 1.13 to 1.19 conflict with that OpenJDK's zlib.
@@ -34,7 +33,10 @@ threadpoolctl = "==3.6.0"
 [environments]
 gatk = { features = ["gatk"], no-default-feature = true }
 
+# bcftools and htslib security fixes must not wait out the cutoff.
 [exclude-newer]
+bcftools = "0d"
+htslib = "0d"
 ca-certificates = "0d"
 certifi = "0d"
 pip = "0d"

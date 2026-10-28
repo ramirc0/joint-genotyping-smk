@@ -15,7 +15,7 @@ environments:
       linux-64:
       - conda: https://conda.anaconda.org/bioconda/linux-64/bcftools-1.24-h487d631_1.conda
       - conda: https://conda.anaconda.org/bioconda/linux-64/htslib-1.24-ha79157c_0.conda
-      - conda: https://conda.anaconda.org/bioconda/noarch/picard-3.4.0-hdfd78af_0.tar.bz2
+      - conda: https://conda.anaconda.org/bioconda/noarch/picard-3.5.0-hdfd78af_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/alsa-lib-1.2.16.1-h7cc23a3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/binutils_impl_linux-64-2.46.1-default_hfdba357_103.conda
@@ -75,7 +75,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libzlib-1.3.2-h25fd6f3_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/make-4.4.1-hb03c661_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ncurses-6.6-hdb14827_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-21.0.10-h1602c4f_22.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-25.0.2-h1602c4f_26.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.6.5-h781a0a9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pango-1.58.2-h7bb47b9_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pcre2-10.47-h8b3dc9c_1.conda
@@ -300,9 +300,9 @@ packages:
     - gatk4 >=4.6.2.0,<5.0a0
   size: 392185756
   timestamp: 1759164916358
-- conda: https://conda.anaconda.org/bioconda/noarch/picard-3.4.0-hdfd78af_0.tar.bz2
-  sha256: 0f04c90658e2107e36292a18be489221eec868adc1f5c3c6be5068d905159781
-  md5: 40de476004af885d70d59725189bd07d
+- conda: https://conda.anaconda.org/bioconda/noarch/picard-3.5.0-hdfd78af_0.conda
+  sha256: 04908fa81549bda43ea7712f25d610e86be4eacd1f32e0f454f582ce88a583ab
+  md5: b7b1b5ae069842a0df0a2463fcae03e5
   depends:
   - openjdk >=17
   - r-base
@@ -310,9 +310,9 @@ packages:
   license_family: MIT
   run_exports:
     weak:
-    - picard >=3.4.0,<4.0a0
-  size: 58963674
-  timestamp: 1744561016482
+    - picard >=3.5.0,<4.0a0
+  size: 58782347
+  timestamp: 1785525197204
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
   build_number: 20
   sha256: 1dd3fffd892081df9726d7eb7e0dea6198962ba775bd88842135a4ddb4deb3c9
@@ -1560,42 +1560,42 @@ packages:
   run_exports: {}
   size: 169379443
   timestamp: 1733812647581
-- conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-21.0.10-h1602c4f_22.conda
-  sha256: b47965a90c9682300f393c3dc6d0c2fde918b62a318449da9c940ac9b6ec2bc0
-  md5: 92c69cf06ca1a110975e09f78ffdb41e
+- conda: https://conda.anaconda.org/conda-forge/linux-64/openjdk-25.0.2-h1602c4f_26.conda
+  sha256: 703aa71462f1b7b8804e1ba6f2663073c47808c693e8a912eb0ce3191ebe90fb
+  md5: 920916925a5d103cf923d51813cc947d
   depends:
   - xorg-libx11
   - xorg-libxext
   - xorg-libxi
   - xorg-libxrender
   - xorg-libxtst
+  - __glibc >=2.17,<3.0.a0
   - libstdcxx >=15
   - libgcc >=15
-  - __glibc >=2.17,<3.0.a0
-  - alsa-lib >=1.2.16.1,<1.3.0a0
+  - libpng >=1.6.58,<1.7.0a0
+  - libharfbuzz >=14.4.0
   - libfreetype >=2.14.3
   - libfreetype6 >=2.14.3
-  - xorg-libx11 >=1.8.13,<2.0a0
-  - xorg-libxrandr >=1.5.5,<2.0a0
-  - libzlib >=1.3.2,<2.0a0
-  - libharfbuzz >=14.4.0
+  - xorg-libxext >=1.3.7,<2.0a0
+  - alsa-lib >=1.2.16.1,<1.3.0a0
   - xorg-libxt >=1.3.1,<2.0a0
+  - xorg-libxrandr >=1.5.5,<2.0a0
+  - xorg-libx11 >=1.8.13,<2.0a0
+  - libcups >=2.3.3,<2.4.0a0
+  - xorg-libxtst >=1.2.5,<2.0a0
+  - lcms2 >=2.19.1,<3.0a0
+  - libjpeg-turbo >=3.2.0,<4.0a0
+  - libzlib >=1.3.2,<2.0a0
+  - xorg-libxi >=1.8.3,<2.0a0
+  - giflib >=6.1.3,<6.2.0a0
+  - xorg-libxrender >=0.9.12,<0.10.0a0
   - fontconfig >=2.18.3,<3.0a0
   - fonts-conda-ecosystem
-  - xorg-libxtst >=1.2.5,<2.0a0
-  - xorg-libxi >=1.8.3,<2.0a0
-  - libjpeg-turbo >=3.2.0,<4.0a0
-  - xorg-libxrender >=0.9.12,<0.10.0a0
-  - xorg-libxext >=1.3.7,<2.0a0
-  - lcms2 >=2.19.1,<3.0a0
-  - libpng >=1.6.58,<1.7.0a0
-  - giflib >=6.1.3,<6.2.0a0
-  - libcups >=2.3.3,<2.4.0a0
   license: GPL-2.0-or-later WITH Classpath-exception-2.0
   license_family: GPL
   run_exports: {}
-  size: 186415721
-  timestamp: 1787924895951
+  size: 122570168
+  timestamp: 1787924935854
 - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.6.5-h781a0a9_0.conda
   sha256: 9c1533f1cf784f0e250919c0c9762d0b0e6bc727a79290ffb7cea1ceca1d038c
   md5: 5a51a2ea653f120240b1a9bf76e0aae9
