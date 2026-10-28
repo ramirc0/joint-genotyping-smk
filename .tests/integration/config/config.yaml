@@ -4,7 +4,6 @@ outdir: results
 pixi_env: default
 run_id: default
 tmp_dir: .tmp
-slack_webhook_url: null
 
 references:
   fasta: resources/chr20_toy.fasta

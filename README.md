@@ -18,7 +18,7 @@ config/
   config.yaml.template   parameters + paths; copy to config.yaml (gitignored)
   sample_map.example.tsv headerless: sample ID, gVCF path
 workflow/
-  Snakefile              includes the rule files, Slack hooks, rule all
+  Snakefile              includes the rule files, onstart hook, rule all
   rules/
     common.smk           config, sample map checks, path constants, helpers
     genotype.smk         SplitIntervals, GenomicsDBImport, GenotypeGVCFs, hard filter, gather
@@ -90,7 +90,6 @@ with a GATK `.idx`.
 | `run_id` | Run name. Outputs go under `results/<run_id>/`. |
 | `pixi_env` | Environment of `workflow/envs/pixi.toml` that the metrics rule uses. |
 | `tmp_dir` | GATK and Picard scratch. Each run empties it at start, so it MUST hold nothing else. It MUST NOT sit on a `noexec` mount, as `/tmp` is on some hosts. |
-| `slack_webhook_url` | Optional [Slack app](https://docs.slack.dev/app-management/quickstart-app-settings/) webhook. The run posts when it starts, succeeds or fails. |
 | `references.fasta` | Reference genome FASTA. |
 | `references.dbsnp_vcf` | dbSNP VCF for GenotypeGVCFs and the metrics. |
 | `references.eval_interval_list` | Target intervals for the metrics. |

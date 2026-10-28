@@ -9,15 +9,6 @@ include: "rules/qc.smk"
 onstart:
     shell("pixi install --manifest-path {workflow.basedir:q}/envs/pixi.toml --all --locked")
     shell("rm -rf {config[tmp_dir]:q} && mkdir -p {config[tmp_dir]:q}")
-    notify_slack("Snakemake Started 🚀")
-
-
-onsuccess:
-    notify_slack("Snakemake Finished Successfully! ✅")
-
-
-onerror:
-    notify_slack("Snakemake Finished With Errors! ❌")
 
 
 rule all:

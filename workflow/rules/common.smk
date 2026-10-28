@@ -1,6 +1,5 @@
 # Config, sample map, and shared helpers.
 
-import json
 from pathlib import Path
 
 import polars as pl
@@ -91,16 +90,3 @@ def repeat_flag(flag, values):
     """
     return [token for value in values for token in (flag, str(value))]
 
-
-def notify_slack(text):
-    """Post `text` to `config["slack_webhook_url"]` when one is set.
-
-    Parameters
-    ----------
-    text : str
-        Message body.
-    """
-    url = config.get("slack_webhook_url", None)
-    if url:
-        payload = json.dumps({"text": text}, ensure_ascii=False)
-        shell("curl -X POST -H 'Content-Type: application/json' -d {payload:q} {url:q}")
