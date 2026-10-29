@@ -64,9 +64,8 @@ rule genotype_gvcfs:
         # TileDB refuses an existing directory as a workspace.
         WORKSPACE="$WORKDIR/genomicsdb"
 
-        gatk --java-options "-Xms8000m -Xmx$(({resources.mem_mb} - 10000))m" \
+        gatk --java-options "-Xms8000m -Xmx$(({resources.mem_mb} - 10000))m -Djava.io.tmpdir={params.tmp_dir}" \
             GenomicsDBImport \
-            --tmp-dir {params.tmp_dir:q} \
             --genomicsdb-workspace-path "$WORKSPACE" \
             --batch-size {params.batch_size:q} \
             -L {input.interval_list:q} \
@@ -75,9 +74,8 @@ rule genotype_gvcfs:
             --merge-input-intervals \
             --consolidate
 
-        gatk --java-options "-Xms8000m -Xmx$(({resources.mem_mb} - 10000))m" \
+        gatk --java-options "-Xms8000m -Xmx$(({resources.mem_mb} - 10000))m -Djava.io.tmpdir={params.tmp_dir}" \
             GenotypeGVCFs \
-            --tmp-dir {params.tmp_dir:q} \
             -R {input.fasta:q} \
             -O {output.vcf:q} \
             -D {input.dbsnp_vcf:q} \
@@ -113,17 +111,15 @@ rule hard_filter:
         r"""
         exec &> >(tee {log:q})
 
-        gatk --java-options "-Xms3000m -Xmx{resources.mem_mb}m" \
+        gatk --java-options "-Xms3000m -Xmx{resources.mem_mb}m -Djava.io.tmpdir={params.tmp_dir}" \
             VariantFiltration \
-            --tmp-dir {params.tmp_dir:q} \
             --filter-expression "ExcessHet > {params.excess_het_threshold}" \
             --filter-name ExcessHet \
             -O {output.vcf:q} \
             -V {input:q}
 
-        gatk --java-options "-Xms3000m -Xmx{resources.mem_mb}m" \
+        gatk --java-options "-Xms3000m -Xmx{resources.mem_mb}m -Djava.io.tmpdir={params.tmp_dir}" \
             MakeSitesOnlyVcf \
-            --TMP_DIR {params.tmp_dir:q} \
             -I {output.vcf:q} \
             -O {output.sites_only_vcf:q}
 
@@ -153,9 +149,8 @@ rule gather_sites_only_vcfs:
         r"""
         exec &> >(tee {log:q})
 
-        gatk --java-options "-Xms6000m -Xmx{resources.mem_mb}m" \
+        gatk --java-options "-Xms6000m -Xmx{resources.mem_mb}m -Djava.io.tmpdir={params.tmp_dir}" \
             GatherVcfsCloud \
-            --tmp-dir {params.tmp_dir:q} \
             --ignore-safety-checks \
             --gather-type BLOCK \
             {params.vcfs:q} \

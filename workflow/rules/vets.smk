@@ -24,9 +24,8 @@ rule extract_variant_annotations:
         r"""
         exec &> >(tee {log:q})
 
-        gatk --java-options "-Xmx$(({resources.mem_mb} - 2000))m" \
+        gatk --java-options "-Xmx$(({resources.mem_mb} - 2000))m -Djava.io.tmpdir={params.tmp_dir}" \
             ExtractVariantAnnotations \
-            --tmp-dir {params.tmp_dir:q} \
             -V {input.vcf:q} \
             -O {params.prefix:q} \
             {params.annotations:q} \
@@ -55,9 +54,8 @@ rule train_variant_annotations_model:
         r"""
         exec &> >(tee {log:q})
 
-        gatk --java-options "-Xmx6000m" \
+        gatk --java-options "-Xmx6000m -Djava.io.tmpdir={params.tmp_dir}" \
             TrainVariantAnnotationsModel \
-            --tmp-dir {params.tmp_dir:q} \
             --annotations-hdf5 {input:q} \
             -O {params.prefix:q}
 
@@ -92,9 +90,8 @@ rule score_variant_annotations:
         r"""
         exec &> >(tee {log:q})
 
-        gatk --java-options "-Xmx6000m" \
+        gatk --java-options "-Xmx6000m -Djava.io.tmpdir={params.tmp_dir}" \
             ScoreVariantAnnotations \
-            --tmp-dir {params.tmp_dir:q} \
             -V {input.vcf:q} \
             -O {params.prefix:q} \
             {params.annotations:q} \
@@ -130,9 +127,8 @@ rule gather_final_vcf:
         r"""
         exec &> >(tee {log:q})
 
-        gatk --java-options "-Xms6000m -Xmx$(({resources.mem_mb} - 6000))m" \
+        gatk --java-options "-Xms6000m -Xmx$(({resources.mem_mb} - 6000))m -Djava.io.tmpdir={params.tmp_dir}" \
             GatherVcfsCloud \
-            --tmp-dir {params.tmp_dir:q} \
             --ignore-safety-checks \
             --gather-type BLOCK \
             {params.vcfs:q} \
